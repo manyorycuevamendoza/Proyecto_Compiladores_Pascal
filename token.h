@@ -6,37 +6,25 @@
 class Token {
 public:
     enum Type {
-        // Operadores y Símbolos
-        PLUS, MINUS, MUL, DIV,
-        LT, LE, EQ,
-        ASSIGN,       // :=
-        COMA,         // ,
-        PC,           // ;
-        PD, PI,       // ) y (
-        CORCHETE_A,   // [
-        CORCHETE_C,   // ]
-        PUNTO_PUNTO,  // ..
-
         // Palabras clave
-        VAR, ARRAY, OF, RANGE, 
-        POINTER,       // ^
-        FUN, ENDFUN, RETURN,
-        IF, THEN, ELSE, ENDIF,
-        WHILE, DO, ENDWHILE,
-        FOR, TO, ENDFOR,
-        PRINT,
+        PROGRAM, BEGIN, END, FUNCTION, PROCEDURE, TYPE, VAR,
+        FOR, TO, DO, DIV, MOD, OR, AND, NOT, TRUE, FALSE, NIL,
+        ARRAY, OF, POINTER,
 
+        // Operadores y símbolos
+        PLUS, MINUS, MUL, DIV_OP, // MUL: *, DIV_OP: operador de división real
+        ASSIGN, EQUAL, NOTEQUAL, GREATER, GREATEREQUAL, LESS, LESSEQUAL,
+        LBRACKET, RBRACKET, DOTDOT, // [ ], ..
+        PD, PI, PC, COMA, // Paréntesis y coma
+       
         // Tipos de datos
         INTEGER, LONGINT, CHAR, STRING, BOOLEAN, INT, VOID,
 
-        // Constantes y Literales
-        TRUE, FALSE, NUM, BOOL,
-
-        // Identificadores
-        ID,
+        // Identificadores y literales
+        ID, NUM, BOOL, NIL_LITERAL,
 
         // Otros
-        ERR, END
+        ERR, END_OF_FILE
     };
 
     Type type;
