@@ -125,7 +125,7 @@ El análisis léxico transforma el código fuente en una secuencia de tokens, id
 
 - **Reconocimiento de tokens**: Palabras clave, identificadores, números, operadores
 - **Manejo de espacios**: Eliminación de espacios en blanco
-- **Reporte de errores**: Mensajes claros con posición del error
+- **Reporte de errores**: Mensajes claros con posición del error(debug)
 - **Tokens especiales**: Soporte para arrays (`[`, `]`, `..`), punteros (`^`, `@`)
 
 ### Ejemplo de Tokenización
