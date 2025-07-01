@@ -364,6 +364,21 @@ Se desarrolló una interfaz web que permite:
 - **Manejo de errores**: Visualización clara de errores de compilación
 - **Ejecución en tiempo real**: Compilación y ejecución automática
 
+## 🔧 Ejecución de backend
+
+Para el backend:
+
+```python
+make.py
+```
+
+## 🔧 Ejecución de interfaz
+
+Para la interfaz:
+
+```python
+run_interface.py
+```
 # Arquitectura del Sistema
 
 ## Flujo de Compilación
