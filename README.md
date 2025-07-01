@@ -2,7 +2,7 @@
 
 | N.° | Nombre completo                          |
 |-----|------------------------------------------|
-| 1   | Harold Canto Vida                        |
+| 1   | Harold Canto Vidal                       |
 | 2   | Manyory Estefany Cueva Mendoza           |
 | 3   | Renzo Felix Aponte                       |
 
