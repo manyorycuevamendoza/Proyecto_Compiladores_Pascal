@@ -146,7 +146,7 @@ El análisis sintáctico organiza los tokens en un Árbol Sintáctico Abstracto 
 ### Estructura del Parser
 
 - **Análisis descendente recursivo**: Basado en gramática LL(1)
-- **Manejo de errores**: Recuperación y reporte de errores sintácticos
+- **Manejo de errores**: Reporte de errores sintácticos
 - **Construcción del AST**: Nodos para cada constructo del lenguaje
 - **Soporte para tipos complejos**: Arrays y punteros
 
@@ -168,7 +168,7 @@ arr[]  +
 
 ## 3. Análisis Semántico
 
-El análisis semántico verifica que las reglas del lenguaje se cumplan: variables declaradas, tipos compatibles, acceso válido a arrays y punteros, etc.
+El análisis semántico verifica que las reglas del lenguaje se cumplan: variables declaradas, tipos compatibles, acceso válido a arrays y punteros.
 
 ### Validaciones Semánticas
 
@@ -366,25 +366,6 @@ Se desarrolló una interfaz web que permite:
 
 # Arquitectura del Sistema
 
-## Estructura de Archivos
-
-```
-compilador/
-├── src/
-│   ├── scanner.cpp/h          # Análisis léxico
-│   ├── parser.cpp/h           # Análisis sintáctico
-│   ├── imp_interpreter.cpp/hh # Intérprete
-│   ├── gencode.cpp/hh         # Generación de código
-│   ├── exp.h                  # Definiciones del AST
-│   └── main.cpp               # Punto de entrada
-├── web/
-│   ├── interfaz_compilador.html
-│   └── run_interface.py       # Servidor web
-└── tests/
-    ├── prueba.txt
-    └── input5_5.txt
-```
-
 ## Flujo de Compilación
 
 ```mermaid
@@ -471,8 +452,6 @@ end.
 # Resultados y Análisis
 
 ## Métricas de Rendimiento
-
-- **Tiempo de compilación**: < 1 segundo para programas pequeños
 - **Tamaño del código generado**: Optimizado para x86-64
 - **Precisión de resultados**: 100% coincidencia entre intérprete y ensamblador
 - **Cobertura de errores**: Detección de errores léxicos, sintácticos y semánticos
@@ -498,9 +477,9 @@ El compilador desarrollado para Pascal con soporte de arrays y punteros abarca t
 
 ## Logros Principales
 
-1. **Implementación completa**: Todas las fases del compilador funcionando correctamente
+1. **Implementación completa**: Todas las fases del compilador funcionan correctamente
 2. **Soporte de arrays**: Manejo de rangos arbitrarios con validación de índices
-3. **Gestión de punteros**: Operaciones completas de punteros con gestión de memoria
+3. **Gestión de punteros**: Operaciones de punteros con gestión de memoria
 4. **Generación de código**: Código ensamblador x86-64 ejecutable
 5. **Interfaz de usuario**: Herramienta web para pruebas y validación
 
@@ -520,13 +499,11 @@ El enfoque modular y la implementación en C++ facilitan futuras extensiones, co
 
 1. Aho, A. V., Lam, M. S., Sethi, R., & Ullman, J. D. (2006). *Compilers: Principles, Techniques, and Tools* (2nd ed.). Pearson Education.
 
-2. Wirth, N. (1976). *Algorithms + Data Structures = Programs*. Prentice-Hall.
+2. Intel Corporation. (2019). *Intel 64 and IA-32 Architectures Software Developer's Manual*.
 
-3. Intel Corporation. (2019). *Intel 64 and IA-32 Architectures Software Developer's Manual*.
+3. Stroustrup, B. (2013). *The C++ Programming Language* (4th ed.). Addison-Wesley.
 
-4. Stroustrup, B. (2013). *The C++ Programming Language* (4th ed.). Addison-Wesley.
-
-5. Appel, A. W. (2004). *Modern Compiler Implementation in C*. Cambridge University Press.
+4. Appel, A. W. (2004). *Modern Compiler Implementation in C*. Cambridge University Press.
 
 ---
 
@@ -535,11 +512,3 @@ El enfoque modular y la implementación en C++ facilitan futuras extensiones, co
 ## Anexo A: Código Fuente Completo
 
 El código fuente completo del compilador está disponible en el repositorio del proyecto, incluyendo todos los archivos de implementación, pruebas y documentación.
-
-## Anexo B: Casos de Prueba Adicionales
-
-Se incluyen casos de prueba adicionales para validar diferentes aspectos del compilador, incluyendo casos límite y manejo de errores.
-
-## Anexo C: Manual de Usuario
-
-Guía detallada para el uso del compilador y la interfaz web, incluyendo ejemplos y troubleshooting. 
