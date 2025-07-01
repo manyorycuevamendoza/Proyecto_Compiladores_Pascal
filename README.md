@@ -366,7 +366,15 @@ Se desarrolló una interfaz web que permite:
 
 ## 🔧 Ejecución de backend
 
-Para el backend:
+El backend se encarga del proceso de compilación, análisis léxico, sintáctico, semántico y la generación de código ensamblador x86-64.
+
+Pasos para ejecutar el backend:
+
+Abrir una terminal en la carpeta del proyecto.
+
+Asegurarse de tener instalado python3.
+
+Ejecutar el script de construcción:
 
 ```python
 make.py
@@ -374,11 +382,18 @@ make.py
 
 ## 🔧 Ejecución de interfaz
 
-Para la interfaz:
+La interfaz web permite realizar pruebas interactivas, visualizar el código fuente, el código ensamblador generado y los resultados de ejecución, todo desde el navegador.
+
+Pasos para ejecutar la interfaz:
+
+Asegúrate de tener python3.
+
+Dentro del directorio del proyecto, ejecuta:
 
 ```python
 run_interface.py
 ```
+
 # Arquitectura del Sistema
 
 ## Flujo de Compilación
