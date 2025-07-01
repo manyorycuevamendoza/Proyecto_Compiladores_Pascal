@@ -124,7 +124,7 @@ El análisis léxico transforma el código fuente en una secuencia de tokens, id
 ### Características del Scanner
 
 - **Reconocimiento de tokens**: Palabras clave, identificadores, números, operadores
-- **Manejo de espacios**: Eliminación de espacios en blanco y comentarios
+- **Manejo de espacios**: Eliminación de espacios en blanco
 - **Reporte de errores**: Mensajes claros con posición del error
 - **Tokens especiales**: Soporte para arrays (`[`, `]`, `..`), punteros (`^`, `@`)
 
