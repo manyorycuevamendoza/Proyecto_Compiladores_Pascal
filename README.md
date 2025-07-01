@@ -1,3 +1,14 @@
+# Integrantes
+
+| N.° | Nombre completo                          |
+|-----|------------------------------------------|
+| 1   | Harold Canto Vida                        |
+| 2   | Manyory Estefany Cueva Mendoza           |
+| 3   | Renzo Felix Aponte                       |
+
+
+
+
 # Introducción
 
 El desarrollo de un compilador implica abordar múltiples fases de transformación del código fuente, permitiendo que programas escritos en un lenguaje de alto nivel sean ejecutados por una máquina. En este proyecto, se diseñó e implementó un compilador para un subconjunto de Pascal, extendido con soporte para arrays con rangos personalizados y punteros, características fundamentales del lenguaje original.
@@ -28,41 +39,80 @@ El lenguaje soportado por el compilador es un subconjunto de Pascal, que incluye
 La gramática utilizada es LL(1), permitiendo un análisis sintáctico descendente recursivo:
 
 ```
-Program ::= 'program' ID ';' [TYPE] [VAR] [FUNCTION] 'begin' StatementList 'end' '.'
+Programa ::= "program" id ";" BloqueDeclaraciones* CuerpoPrincipal "."
 
-TYPE ::= 'type' TypeDef {TypeDef}
+BloqueDeclaraciones ::= BloqueTipos | BloqueVariables | BloqueSubprogramas
 
-VAR ::= 'var' VarDec {VarDec}
+BloqueTipos ::= "type" (DeclTipo)+
+DeclTipo ::= id "=" Tipo ";"
 
-VarDec ::= IDList ':' Type ';'
+BloqueVariables ::= "var" (DeclVariable)+
+DeclVariable ::= ListaIdentificadores ":" Tipo ";"
+ListaIdentificadores ::= id ("," id)*
 
-Type ::= 'Integer' | 'Boolean' | 'array' '[' NUM '..' NUM ']' 'of' Type | '^' Type
+BloqueSubprogramas ::= Subprograma*
+Subprograma ::= ("function" | "procedure") id "(" [ListaParametros] ")" [":" Tipo] ";" CuerpoSubprograma "end" ";"
 
-StatementList ::= Statement {';' Statement}
+ListaParametros ::= Parametro (";" Parametro)*
+Parametro ::= [ModoParametro] ListaIdentificadores ":" Tipo
+ModoParametro ::= "var" | "const" | "out"
 
-Statement ::= AssignStatement | PrintStatement | IfStatement | WhileStatement | ForStatement
+CuerpoSubprograma ::= BloqueDeclaraciones* "begin" ListaSentencias "end"
 
-AssignStatement ::= LValue ':=' Expression
+CuerpoPrincipal ::= "begin" ListaSentencias "end"
 
-LValue ::= ID | ID '[' Expression ']' | ID '^'
+ListaSentencias ::= Sentencia (";" Sentencia)* [";"]
 
-Expression ::= ExprRel {RelOp ExprRel}
+Sentencia ::= id ":=" Expr
+            | AccesoArray ":=" Expr
+            | Desreferencia ":=" Expr
+            | "writeln" "(" [ListaArgs] ")"
+            | "if" Expr "then" Sentencia ["else" Sentencia]
+            | "if" Expr "then" "begin" ListaSentencias "end" ["else" "begin" ListaSentencias "end"]
+            | "while" Expr "do" Sentencia
+            | "while" Expr "do" "begin" ListaSentencias "end"
+            | "for" id ":=" Expr "to" Expr "do" Sentencia
+            | "for" id ":=" Expr "to" Expr "do" "begin" ListaSentencias "end"
+            | id "(" [ListaArgs] ")"
+            | "break"
 
-ExprRel ::= ExprOr {'or' ExprOr}
+Expr ::= ExprRel
+ExprRel ::= ExprOr [ OperRel ExprOr ]
+OperRel ::= "<" | "<=" | ">" | ">=" | "=" | "<>"
+ExprOr ::= ExprAnd ( "or" ExprAnd )*
+ExprAnd ::= ExprAdd ( "and" ExprAdd )*
+ExprAdd ::= ExprMul ( ("+" | "-") ExprMul )*
+ExprMul ::= ExprUnary ( ("*" | "/" | "div" | "mod") ExprUnary )*
+ExprUnary ::= "not" ExprUnary | Factor
+Factor ::= id
+         | "(" Expr ")"
+         | id "(" [ListaArgs] ")"
+         | AccesoArray
+         | Desreferencia
+         | Direccion
+         | NUM
+         | Bool
 
-ExprOr ::= ExprAnd {'and' ExprAnd}
+Tipo ::= TipoBasico | TipoArray | TipoPuntero
 
-ExprAnd ::= ExprNot {'not' ExprNot}
+TipoBasico ::= id
+             | "Integer"
+             | "Longint"
+             | "Boolean"
+             | "Char"
+             | "Real"
+             | "String"
 
-ExprNot ::= ['not'] ExprAdd
+TipoArray ::= "array" "[" Rango "]" "of" TipoBasico
+Rango ::= NUM ".." NUM
+TipoPuntero ::= "^" TipoBasico
 
-ExprAdd ::= Term {AddOp Term}
+AccesoArray ::= id "[" Expr "]"
+Desreferencia ::= id "^"
+Direccion ::= "@" id
+ListaArgs ::= Expr ("," Expr)*
+Bool ::= "true" | "false" | "nil"
 
-Term ::= Factor {MulOp Factor}
-
-Factor ::= NUM | ID | '(' Expression ')' | ID '[' Expression ']' | ID '^' | '@' ID | FunctionCall
-
-FunctionCall ::= ID '(' [Expression {',' Expression}] ')'
 ```
 
 # Fases del Compilador
