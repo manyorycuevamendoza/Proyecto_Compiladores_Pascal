@@ -1,27 +1,4 @@
----
-title: "Compilador Pascal con Arrays y Punteros"
-subtitle: "Proyecto Final - Compiladores"
-author: 
-  - "Felix Aponte Renzo Josimar"
-  - "Kayla De Vivanco Briceño" 
-  - "David Mauricio Jacobo Ruiz"
-date: "2024-2"
-institute: "Universidad de Ingeniería y Tecnología"
-documentclass: article
-fontsize: 12pt
-geometry: margin=1in
-output:
-  pdf_document:
-    toc: true
-    toc_depth: 3
-    number_sections: true
-    fig_caption: true
-  html_document:
-    toc: true
-    toc_float: true
-    theme: cosmo
-    highlight: tango
----
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
