@@ -1,0 +1,11 @@
+program PtrNewDispose;
+
+var
+  a : ^Integer;
+
+begin
+  new(a);
+  a^ := 10;              
+  writeln( a^);  
+  dispose(a);
+end.

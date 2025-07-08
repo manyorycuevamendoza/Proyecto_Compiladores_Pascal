@@ -1,0 +1,12 @@
+program EjemploArray;
+var
+  arr: array[1..2] of Integer;
+  i: Integer;
+begin
+  arr[1] := 10;
+  arr[2] := 20;
+
+  
+  for i := 1 to 2 do
+    writeln(arr[i]);
+end.

@@ -1,0 +1,12 @@
+program IfElseLineal;
+
+var
+  num: Integer;
+
+begin
+  num := -3;
+  if num >= 0 then
+    writeln(1)
+  else
+    writeln(0);
+end.

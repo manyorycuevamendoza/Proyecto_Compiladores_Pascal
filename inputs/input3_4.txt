@@ -1,0 +1,16 @@
+program IfAnidado;
+
+var
+  nota: Integer;
+
+begin
+  nota := 16;
+
+  if nota >= 11 then
+    if nota >= 18 then
+      writeln(1)
+    else
+      writeln(2)
+  else
+    writeln(3);
+end.

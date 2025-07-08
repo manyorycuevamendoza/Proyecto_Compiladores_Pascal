@@ -1,0 +1,15 @@
+program Factorial;
+
+var
+  x, y: Integer;
+
+begin
+  x := 5;
+  y := 1;
+  while x > 0 do
+  begin
+    y := x * y;
+    x := x - 1;
+  end;
+  writeln(y);
+end.

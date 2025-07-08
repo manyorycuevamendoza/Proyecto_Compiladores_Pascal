@@ -1,0 +1,17 @@
+program TestDeclOK;
+
+var
+  a: Integer;
+  b, c: Longint;
+  flag: Boolean;
+begin
+
+  a    := 10;
+  b    := 20;
+  c    := b + a;
+  flag := true;
+
+  writeln(a);
+  writeln(c);
+  writeln(flag);
+end.

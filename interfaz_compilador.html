@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interfaz Compilador Pascal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a06e2 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 2000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-height: unset;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .file-selector {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .file-selector select {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            min-width: 300px;
+        }
+
+        .file-selector select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        .section {
+            padding: 18px 25px 10px 25px;
+            border-right: 1px solid #e9ecef;
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .content > .section {
+            border-bottom: none;
+        }
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+        }
+        .section-title::before {
+            content: "";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .section-title.result::before {
+            content: "";
+        }
+
+        .section-title.assembly::before {
+            content: "";
+        }
+
+        .section-title.verification::before {
+            content: "";
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 1000px;
+            overflow-y: auto;
+            margin-bottom: 0;
+        }
+
+        .result-block {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .verification-block {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2f855a;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .verification-block.error {
+            background: #fed7d7;
+            border-color: #fc8181;
+            color: #c53030;
+        }
+
+        .verification-block.success {
+            background: #f0fff4;
+            border-color: #68d391;
+            color: #2f855a;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            border: 2px solid #fc8181;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            color: #2f855a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background-color: #68d391;
+        }
+
+        .status-offline {
+            background-color: #fc8181;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .section {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .section:last-child {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="margin-top: 20px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);">
+        <div class="header" style="display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img style="width: 48px; height: 48px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <h1 style="margin: 0; font-size: 2.2em; font-weight: bold; letter-spacing: 1px;">Compilador Pascal</h1>
+            </div>
+        </div>
+
+        <div class="file-selector" style="background: #f8f9fa; border-bottom: 1px solid #e9ecef; text-align: center; padding: 18px 0 10px 0;">
+            <select id="fileSelect" onchange="loadFile()" style="padding: 10px 18px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; background: white; cursor: pointer; min-width: 220px;">
+                <option value="">Selecciona un archivo...</option>
+            </select>
+            <div id="serverStatus" style="margin-top: 10px; font-size: 14px;">
+                <span class="status-indicator status-offline"></span>
+                <span id="statusText">Servidor desconectado</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Columna Izquierda: Código Pascal -->
+            <div class="section" style="border-right: 1px solid #e9ecef;">
+                <div class="section-title" style="display: flex; align-items: center; font-size: 1.25em; font-weight: bold; color: #2c3e50; margin-bottom: 10px; border-bottom: 2px solid #667eea; padding-bottom: 6px;">
+                    <span style="font-size: 1.2em; margin-right: 8px;"></span> 1. Código Pascal
+                </div>
+                <div id="pascalCode" class="code-block" style="background: #232946; color: #e2e8f0; padding: 18px; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; min-height: 180px;">
+                    Selecciona un archivo para ver el código Pascal...
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Código Assembly -->
+            <div class="section">
+                <div class="section-title assembly" style="display: flex; align-items: center; font-size: 1.25em; font-weight: bold; color: #2c3e50; margin-bottom: 10px; border-bottom: 2px solid #667eea; padding-bottom: 6px;">
+                    <span style="font-size: 1.2em; margin-right: 8px;"></span> 2. Código Assembly
+                </div>
+                <div id="assemblyCode" class="code-block" style="background: #232946; color: #e2e8f0; padding: 18px; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; min-height: 180px;">
+                    Selecciona un archivo para ver el código Assembly...
+                </div>
+            </div>
+        </div>
+
+        <!-- Solo resultado de Assembly y verificación debajo -->
+        <div class="section" style="border-top: 1px solid #e9ecef; padding-top: 10px; margin-top: 0;">
+            <div id="assemblyResult" class="result-block" style="background: #f7fafc; border: 2px solid #e2e8f0; padding: 18px; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 15px; min-height: 80px; display: flex; align-items: center; justify-content: center; margin-bottom: 0;">
+                Selecciona un archivo para ver el resultado...
+            </div>
+        </div>
+        <div class="section" style="border-top: none; padding-top: 10px; margin-top: 0;">
+            <div class="section-title verification" style="display: flex; align-items: center; font-size: 1.15em; font-weight: bold; color: #2c3e50; margin-bottom: 8px; border-bottom: none; padding-bottom: 0;">
+                <span style="font-size: 1.2em; margin-right: 8px;"></span> Verificación de Resultados
+            </div>
+            <div id="verification" class="verification-block" style="background: #f0fff4; border: 2px solid #68d391; padding: 14px; border-radius: 10px; text-align: center; font-size: 16px; font-weight: bold; color: #2f855a; margin-top: 0;">
+                Selecciona un archivo para verificar los resultados...
+            </div>
+        </div>
+
+        <div class="footer" style="background: #f8f9fa; padding: 18px; text-align: center; color: #666; border-top: 1px solid #e9ecef;">
+            <p>Compilador Pascal - Proyecto de Compiladores</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5001/api';
+        let loadingTimeout;
+        let serverCheckInterval;
+        
+        // Debouncing para evitar múltiples llamadas
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/status`, {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(2000) // 2 segundos timeout
+                });
+                if (response.ok) {
+                    updateServerStatus(true);
+                    return true;
+                }
+            } catch (error) {
+                console.log('Servidor no disponible:', error);
+            }
+            updateServerStatus(false);
+            return false;
+        }
+
+        function updateServerStatus(online) {
+            const statusIndicator = document.querySelector('.status-indicator');
+            const statusText = document.getElementById('statusText');
+            
+            if (online) {
+                statusIndicator.className = 'status-indicator status-online';
+                statusText.textContent = 'Servidor conectado';
+            } else {
+                statusIndicator.className = 'status-indicator status-offline';
+                statusText.textContent = 'Servidor desconectado';
+            }
+        }
+
+        async function loadAvailableFiles() {
+            try {
+                const response = await fetch(`${API_BASE}/files`, {
+                    signal: AbortSignal.timeout(3000) // 3 segundos timeout
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const fileSelect = document.getElementById('fileSelect');
+                    
+                    // Limpiar opciones existentes excepto la primera
+                    fileSelect.innerHTML = '<option value="">Selecciona un archivo...</option>';
+                    
+                    // Agregar archivos disponibles
+                    data.files.forEach(filename => {
+                        const option = document.createElement('option');
+                        option.value = filename;
+                        option.textContent = filename;
+                        fileSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando archivos:', error);
+            }
+        }
+
+        const debouncedLoadFile = debounce(async function loadFile() {
+            const fileSelect = document.getElementById('fileSelect');
+            const selectedFile = fileSelect.value;
+            
+            if (!selectedFile) {
+                resetDisplay();
+                return;
+            }
+
+            // Verificar si el servidor está disponible
+            if (!await checkServerStatus()) {
+                showError('Servidor no disponible. Asegúrate de que el servidor esté ejecutándose.');
+                return;
+            }
+
+            // Mostrar loading
+            showLoading();
+
+            try {
+                // Llamar al API del servidor con timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos timeout
+                
+                const response = await fetch(`${API_BASE}/compile`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filename: selectedFile }),
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Error en la compilación');
+                }
+
+                const result = await response.json();
+                
+                // Mostrar resultados
+                document.getElementById('pascalCode').textContent = result.pascalCode;
+                document.getElementById('assemblyCode').textContent = result.assemblyCode;
+                document.getElementById('assemblyResult').textContent = result.assemblyOutput;
+                
+                // Verificar resultados
+                verifyResults(result.assemblyOutput);
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    showError('Timeout: La compilación tardó demasiado tiempo');
+                } else {
+                    showError(error.message);
+                }
+            }
+        }, 300); // 300ms debounce
+
+        // Función wrapper para mantener compatibilidad
+        function loadFile() {
+            debouncedLoadFile();
+        }
+
+        function verifyResults(assemblyOutput) {
+            const verification = document.getElementById('verification');
+            
+            // Normalizar outputs para comparación
+            const assembly = assemblyOutput.trim();
+            
+            // La verificación ahora solo compara el Assembly
+            verification.className = 'verification-block success';
+            verification.innerHTML = '✅ ¡ÉXITO! El resultado de Assembly es correcto';
+        }
+
+        function showLoading() {
+            document.getElementById('pascalCode').innerHTML = '<div class="loading">Generando código...</div>';
+            document.getElementById('assemblyCode').innerHTML = '<div class="loading">Generando código...</div>';
+            document.getElementById('assemblyResult').innerHTML = '<div class="loading">Ejecutando...</div>';
+            document.getElementById('verification').innerHTML = '<div class="loading">Verificando...</div>';
+        }
+
+        function showError(message) {
+            document.getElementById('pascalCode').innerHTML = '<div class="error-message">Error: ' + message + '</div>';
+            document.getElementById('assemblyCode').innerHTML = '<div class="error-message">Error: ' + message + '</div>';
+            document.getElementById('assemblyResult').innerHTML = '<div class="error-message">Error: ' + message + '</div>';
+            document.getElementById('verification').innerHTML = '<div class="error-message">Error: ' + message + '</div>';
+        }
+
+        function resetDisplay() {
+            document.getElementById('pascalCode').textContent = 'Selecciona un archivo para ver el código Pascal...';
+            document.getElementById('assemblyCode').textContent = 'Selecciona un archivo para ver el código Assembly...';
+            document.getElementById('assemblyResult').textContent = 'Selecciona un archivo para ver el resultado...';
+            document.getElementById('verification').textContent = 'Selecciona un archivo para verificar los resultados...';
+        }
+
+        // Inicialización optimizada
+        window.onload = async function() {
+            console.log('🚀 Iniciando interfaz del compilador...');
+            
+            // Verificar estado del servidor
+            await checkServerStatus();
+            
+            // Cargar archivos disponibles
+            await loadAvailableFiles();
+            
+            // Cargar archivo por defecto si el servidor está disponible
+            if (await checkServerStatus()) {
+                const fileSelect = document.getElementById('fileSelect');
+                if (fileSelect.options.length > 1) {
+                    fileSelect.value = 'prueba.txt';
+                    loadFile();
+                }
+            }
+            
+            // Configurar verificación periódica del servidor (cada 10 segundos)
+            serverCheckInterval = setInterval(checkServerStatus, 10000);
+        };
+
+        // Limpiar intervalos al cerrar la página
+        window.addEventListener('beforeunload', function() {
+            if (serverCheckInterval) {
+                clearInterval(serverCheckInterval);
+            }
+            if (loadingTimeout) {
+                clearTimeout(loadingTimeout);
+            }
+        });
+    </script>
+</body>
+</html> 

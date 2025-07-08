@@ -1,0 +1,14 @@
+program TestExprRelacional;
+
+var
+  x, y: Integer;
+  esValido: Boolean;
+
+begin
+  x := 8;
+  y := 12;
+
+  esValido := (x < y) or ((x * 2) = y); 
+
+  writeln(esValido);
+end.

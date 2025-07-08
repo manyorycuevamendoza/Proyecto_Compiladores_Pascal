@@ -1,0 +1,17 @@
+program TestExprOK;
+
+var
+  a, b, c: Integer;
+  mayor: Boolean;
+
+begin
+
+  a := 5 * (2 + 3);      
+  b := 4 - 6 div 2;      
+  c := a - b * 2;       
+
+  writeln(a);        
+  writeln(b);          
+  writeln(c);          
+  writeln(mayor);  
+end.

@@ -1,0 +1,15 @@
+program IfMixto;
+
+var
+  flag: Boolean;
+
+begin
+  flag := true;
+
+  if flag then
+  begin
+    writeln(1);
+  end
+  else
+    writeln(0);
+end.

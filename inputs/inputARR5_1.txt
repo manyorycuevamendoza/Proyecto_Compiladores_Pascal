@@ -1,0 +1,12 @@
+program ArraySimple;
+
+var
+  v: array[1..5] of Integer;
+  i: Integer;
+
+begin
+  for i := 1 to 5 do
+    v[i] := i * 10;   
+
+  writeln(v[3]); 
+end.

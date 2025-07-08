@@ -1,0 +1,14 @@
+program Example;
+var
+  x: Integer;
+  y: Integer;
+  z: Longint;
+begin
+
+  x := 1;
+  y := 10;
+  z := 1000000;
+  writeln(x);
+  writeln(y);
+  writeln(z);
+end.

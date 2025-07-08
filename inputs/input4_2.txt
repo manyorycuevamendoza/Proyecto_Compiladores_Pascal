@@ -1,0 +1,16 @@
+program TestFuncSuma;
+
+function Resta(a, b: Integer): Integer;
+begin
+  Resta := a - b;    
+end;
+
+var
+  x, y, resultado: Integer;
+
+begin
+  x := 20;
+  y := 7;
+  resultado := Resta(x, y);
+  writeln(resultado);
+end.

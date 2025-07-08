@@ -1,0 +1,72 @@
+🔍 Iniciando verificación de tipos...
+✅ Variable 'a' declarada con tipo int
+✅ Variable 'b' declarada con tipo int
+✅ Asignación verificada correctamente
+✅ Asignación verificada correctamente
+✅ Print statement verificado correctamente
+✅ Print statement verificado correctamente
+✅ If statement verificado correctamente
+✅ Verificación de tipos exitosa
+.data
+print_fmt: .string "%ld\n"
+.text
+  # procesando 0 funciones
+
+# Función main
+.globl main
+main:
+  pushq %rbp
+  movq %rsp, %rbp
+  subq $16, %rsp
+  # Reservado $16 bytes para variables locales
+  movq $5, %rax
+  movq %rax, -8(%rbp)
+  movq $10, %rax
+  movq %rax, -16(%rbp)
+  movq -8(%rbp), %rax
+  pushq %rax
+  movq -16(%rbp), %rax
+  movq %rax, %rcx
+  popq %rax
+  cmpq %rcx, %rax
+  movl $0, %eax
+  setg %al
+  cmpq $0, %rax
+  je else_0
+  subq $16, %rsp
+  # Reservado $16 bytes para variables locales
+  movq -8(%rbp), %rax
+  pushq %rax
+  movq -16(%rbp), %rax
+  movq %rax, %rcx
+  popq %rax
+  subq %rcx, %rax
+  movq %rax, %rsi
+  leaq print_fmt(%rip), %rdi
+  movl $0, %eax
+  call printf@PLT
+  addq $16, %rsp
+  # Liberado $16 bytes de variables locales
+  jmp endif_0
+else_0:
+  subq $16, %rsp
+  # Reservado $16 bytes para variables locales
+  movq -16(%rbp), %rax
+  pushq %rax
+  movq -8(%rbp), %rax
+  movq %rax, %rcx
+  popq %rax
+  subq %rcx, %rax
+  movq %rax, %rsi
+  leaq print_fmt(%rip), %rdi
+  movl $0, %eax
+  call printf@PLT
+  addq $16, %rsp
+  # Liberado $16 bytes de variables locales
+endif_0:
+  addq $16, %rsp
+  # Liberado $16 bytes de variables locales
+  movl $0, %eax
+  leave
+  ret
+.section .note.GNU-stack,"",@progbits

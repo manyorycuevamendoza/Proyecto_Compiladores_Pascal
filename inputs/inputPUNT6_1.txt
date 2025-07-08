@@ -1,0 +1,12 @@
+program PtrAsignacion;
+
+var
+  p: ^Integer;    
+
+begin
+
+  new(p);        
+  p^ := 42;      
+  writeln(p^); 
+  dispose(p)  
+end.

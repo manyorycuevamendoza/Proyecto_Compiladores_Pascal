@@ -1,0 +1,16 @@
+program TestFuncSuma;
+
+function Suma(a, b: Integer): Integer;
+begin
+  Suma := a + b;    
+end;
+
+var
+  x, y, resultado: Integer;
+
+begin
+  x := 12;
+  y := 8;
+  resultado := Suma(x, y);
+  writeln(resultado);
+end.

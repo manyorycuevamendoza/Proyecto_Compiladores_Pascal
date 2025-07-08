@@ -1,0 +1,17 @@
+program TestExprBool;
+
+var
+  n: Integer;
+  esPar, estaEnRango: Boolean;
+
+begin
+  n := 17;
+
+  esPar := (n mod 2) = 0;
+  estaEnRango := (n >= 10) and (n <= 20);
+
+  if esPar and estaEnRango then
+    writeln(1)
+  else
+    writeln(0);
+end.

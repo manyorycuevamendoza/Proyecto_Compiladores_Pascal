@@ -1,0 +1,11 @@
+program PtrDireccionBien;
+
+var
+  px: ^Integer;
+
+begin
+  new(px);       
+  px^ := 15;     
+  writeln(px^);  
+  dispose(px);   
+end.

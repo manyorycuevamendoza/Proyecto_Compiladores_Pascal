@@ -1,0 +1,110 @@
+/* ──────────────────────────────────────────────────────────────
+ *  PROGRAMA PRINCIPAL
+ *────────────────────────────────────────────────────────────── */
+Programa                ::= "program" id ";"  
+                             BloqueDeclaraciones*  
+                             CuerpoPrincipal  
+                             "."
+
+/*---------------------------------------------------------------
+ *  BLOQUES DE DECLARACIÓN  (en cualquier orden)
+ *--------------------------------------------------------------*/
+BloqueDeclaraciones      ::= BloqueTipos
+                           | BloqueVariables  
+                           | BloqueSubprogramas
+
+/*-----------------  DECLARACIÓN DE TIPOS ----------------------*/
+BloqueTipos              ::= "type" (DeclTipo)+
+DeclTipo                 /analiza un cuerpo de programa::= id "=" Tipo ";"
+
+/*-----------------  DECLARACIÓN DE VARIABLES  -----------------*/
+BloqueVariables          ::= "var" (DeclVariable)+
+DeclVariable             ::= ListaIdentificadores ":" Tipo ";"
+ListaIdentificadores     ::= id ("," id)*
+
+/*-----------------  DECLARACIÓN DE SUBPROGRAMAS ---------------*/
+BloqueSubprogramas       ::= Subprograma*
+Subprograma              ::= ("function" | "procedure") id
+                             "(" [ListaParametros] ")"
+                             [":" Tipo]           /* sólo functions */
+                             ";" CuerpoSubprograma "end" ";"
+
+ListaParametros          ::= Parametro ( ";" Parametro )*
+Parametro                ::= [ModoParametro] ListaIdentificadores ":" Tipo
+ModoParametro            ::= "var" | "const" | "out"
+
+CuerpoSubprograma        ::= BloqueDeclaraciones*
+                             "begin" ListaSentencias "end"
+
+/*-----------------  CUERPO PRINCIPAL --------------------------*/
+CuerpoPrincipal          ::= "begin" ListaSentencias "end"
+
+/*---------------------------------------------------------------
+ *  SENTENCIAS
+ *--------------------------------------------------------------*/
+ListaSentencias          ::= Sentencia (";" Sentencia)* [";"]
+
+Sentencia                ::= id ":=" Expr
+                           | AccesoArray ":=" Expr
+                           | Desreferencia ":=" Expr
+                           | "writeln" "(" [ListaArgs] ")"
+                           | "if" Expr "then" Sentencia ["else" Sentencia]
+                           | "if" Expr "then" "begin" ListaSentencias "end"
+                                   ["else" "begin" ListaSentencias "end"]
+                           | "while" Expr "do" Sentencia
+                           | "while" Expr "do" "begin" ListaSentencias "end"
+                           | "for" id ":=" Expr "to" Expr "do" Sentencia
+                           | "for" id ":=" Expr "to" Expr "do"
+                                   "begin" ListaSentencias "end"
+                           | id "(" [ListaArgs] ")"
+                           | "break"
+
+/*---------------------------------------------------------------
+ *  EXPRESIONES  (precedencia real de Pascal)
+ *--------------------------------------------------------------*/
+Expr                    ::= ExprRel
+ExprRel                 ::= ExprOr [ OperRel ExprOr ]
+OperRel                 ::= "<" | "<=" | ">" | ">=" | "=" | "<>"
+ExprOr                  ::= ExprAnd ( "or" ExprAnd )*
+ExprAnd                 ::= ExprAdd ( "and" ExprAdd )*
+ExprAdd                 ::= ExprMul ( ("+" | "-") ExprMul )*
+ExprMul                 ::= ExprUnary ( ("*" | "/" | "div" | "mod") ExprUnary )*
+ExprUnary               ::= "not" ExprUnary | Factor
+Factor                  ::= id
+                           | "(" Expr ")"
+                           | id "(" [ListaArgs] ")"
+                           | AccesoArray
+                           | Desreferencia
+                           | Direccion
+                           | NUM
+                           | Bool
+
+/*---------------------------------------------------------------
+ *  TIPOS
+ *--------------------------------------------------------------*/
+Tipo                     ::= TipoBasico 
+                           | TipoArray 
+                           | TipoPuntero
+
+TipoBasico               ::= id
+                           | "Integer" 
+                           | "Longint" 
+                           | "Boolean" 
+                           | "Char" 
+                           | "Real" 
+                           | "String"
+
+TipoArray                ::= "array" "[" Rango "]" "of" TipoBasico
+
+Rango                    ::= NUM ".." NUM
+
+TipoPuntero              ::= "^" TipoBasico
+
+/*---------------------------------------------------------------
+ *  OTROS CONSTRUCTOS
+ *--------------------------------------------------------------*/
+AccesoArray              ::= id "[" Expr "]"
+Desreferencia            ::= id "^"
+Direccion                ::= "@" id
+ListaArgs                ::= Expr ("," Expr)*
+Bool                     ::= "true" | "false" | "nil"
