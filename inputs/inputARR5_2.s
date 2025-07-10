@@ -10,10 +10,16 @@ main:
   movq %rax, -48(%rbp)
 for_0:
   movq -48(%rbp), %rax
+  pushq %rax
   movq $5, %rax
-  cmpq %rax, -48(%rbp)
-  jg endfor_0
-  subq $48, %rsp
+  movq %rax, %rcx
+  popq %rax
+  cmpq %rcx, %rax
+  movl $0, %eax
+  setle %al
+  movzbq %al, %rax
+  cmpq $0, %rax
+  je endfor_0
   movq -48(%rbp), %rax
   pushq %rax
   movq $2, %rax
@@ -23,6 +29,7 @@ for_0:
   pushq %rax
   movq -48(%rbp), %rax
   pushq %rax
+  movq %rax, %rcx
   leaq -8(%rbp), %rax
   popq %rcx
   subq $1, %rcx
@@ -35,6 +42,7 @@ for_0:
 endfor_0:
   movq $3, %rax
   pushq %rax
+  movq %rax, %rcx
   leaq -8(%rbp), %rax
   popq %rcx
   subq $1, %rcx

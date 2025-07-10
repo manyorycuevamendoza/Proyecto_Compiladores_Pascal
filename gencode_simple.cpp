@@ -209,19 +209,24 @@ void GenCodeVisitor::visit(ForStatement* s) {
     
     cout << "for_" << lbl_cond << ":" << endl;
     
-    // Comparar con el valor final
-    cout << "  movq " << stack_offsets[s->var] << "(%rbp), %rax" << endl;
-    s->end->accept(this);
-    cout << "  cmpq %rax, " << stack_offsets[s->var] << "(%rbp)" << endl;
-    cout << "  jg endfor_" << lbl_end << endl;
+    // Evaluar condición: i <= end
+    cout << "  movq " << stack_offsets[s->var] << "(%rbp), %rax" << endl;  // %rax ← i
+    cout << "  pushq %rax" << endl;  // guardar i
+    s->end->accept(this);  // cargar valor final
+    cout << "  movq %rax, %rcx" << endl;  // %rcx ← valor final
+    cout << "  popq %rax" << endl;  // recuperar i en %rax
+    cout << "  cmpq %rcx, %rax" << endl;  // compara i con valor final → i - valor_final
+    cout << "  movl $0, %eax" << endl;  // limpiar %eax (parte baja de %rax)
+    cout << "  setle %al" << endl;  // %al = 1 si i <= valor_final, si no 0
+    cout << "  movzbq %al, %rax" << endl;  // extiende %al a 64 bits → %rax = 0 o 1
+    cout << "  cmpq $0, %rax" << endl;  // ¿la condición es falsa?
+    cout << "  je endfor_" << lbl_end << endl;  // si i > valor_final (falsa), salta al final del for
     
     // Ejecutar el cuerpo del bucle
     s->body->accept(this);
     
     // Incrementar la variable
-    cout << "  movq " << stack_offsets[s->var] << "(%rbp), %rax" << endl;
-    cout << "  addq $1, %rax" << endl;
-    cout << "  movq %rax, " << stack_offsets[s->var] << "(%rbp)" << endl;
+    cout << "  incq " << stack_offsets[s->var] << "(%rbp)" << endl;
     cout << "  jmp for_" << lbl_cond << endl;
     
     cout << "endfor_" << lbl_end << ":" << endl;

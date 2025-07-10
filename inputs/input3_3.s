@@ -21,7 +21,6 @@ main:
   movzbq %al, %rax
   cmpq $0, %rax
   je else_0
-  subq $16, %rsp
   movq -8(%rbp), %rax
   pushq %rax
   movq -16(%rbp), %rax
@@ -35,7 +34,6 @@ main:
   jmp .end_
   jmp endif_0
 else_0:
-  subq $16, %rsp
   movq -16(%rbp), %rax
   pushq %rax
   movq -8(%rbp), %rax

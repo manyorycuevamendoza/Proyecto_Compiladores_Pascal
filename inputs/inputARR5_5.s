@@ -10,6 +10,7 @@ main:
   pushq %rax
   movq $1, %rax
   pushq %rax
+  movq %rax, %rcx
   leaq -8(%rbp), %rax
   popq %rcx
   subq $1, %rcx
@@ -19,6 +20,7 @@ main:
   movq %rcx, (%rax)
   movq $1, %rax
   pushq %rax
+  movq %rax, %rcx
   leaq -8(%rbp), %rax
   popq %rcx
   subq $1, %rcx

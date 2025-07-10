@@ -19,7 +19,6 @@ main:
   movzbq %al, %rax
   cmpq $0, %rax
   je else_0
-  subq $8, %rsp
   movq $1, %rax
   movq %rax, %rsi
   leaq print_fmt(%rip), %rdi

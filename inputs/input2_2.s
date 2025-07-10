@@ -56,7 +56,6 @@ main:
   andq %rcx, %rax
   cmpq $0, %rax
   je else_0
-  subq $24, %rsp
   movq $1, %rax
   movq %rax, %rsi
   leaq print_fmt(%rip), %rdi
@@ -65,7 +64,6 @@ main:
   jmp .end_
   jmp endif_0
 else_0:
-  subq $24, %rsp
   movq $0, %rax
   movq %rax, %rsi
   leaq print_fmt(%rip), %rdi

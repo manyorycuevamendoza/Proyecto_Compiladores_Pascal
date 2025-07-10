@@ -19,7 +19,6 @@ main:
   movzbq %al, %rax
   cmpq $0, %rax
   je else_0
-  subq $8, %rsp
   movq -8(%rbp), %rax
   pushq %rax
   movq $18, %rax
@@ -31,7 +30,6 @@ main:
   movzbq %al, %rax
   cmpq $0, %rax
   je else_1
-  subq $8, %rsp
   movq $1, %rax
   movq %rax, %rsi
   leaq print_fmt(%rip), %rdi
@@ -40,7 +38,6 @@ main:
   jmp .end_
   jmp endif_1
 else_1:
-  subq $8, %rsp
   movq $2, %rax
   movq %rax, %rsi
   leaq print_fmt(%rip), %rdi
@@ -51,7 +48,6 @@ endif_1:
   jmp .end_
   jmp endif_0
 else_0:
-  subq $8, %rsp
   movq $3, %rax
   movq %rax, %rsi
   leaq print_fmt(%rip), %rdi

@@ -2,9 +2,14 @@ program PtrAsignacion;
 
 var
   px: ^Integer;
+  p: ^Boolean; 
 begin
   new(px);
+  new(p);
   px^ := 15;
+  p^ := true;
   writeln(px^);
+  writeln(p^);
   dispose(px); 
+  dispose(p); 
 end.

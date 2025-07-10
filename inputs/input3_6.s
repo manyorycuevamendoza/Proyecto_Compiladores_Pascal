@@ -22,7 +22,6 @@ while_0:
   movzbq %al, %rax
   cmpq $0, %rax
   je endwhile_0
-  subq $16, %rsp
   movq -8(%rbp), %rax
   pushq %rax
   movq -16(%rbp), %rax

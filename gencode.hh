@@ -10,6 +10,15 @@
 
 using namespace std;
 
+// Estructura para almacenar límites de arrays
+struct ArrayBounds {
+    int lower;
+    int upper;
+    int size;
+    ArrayBounds() : lower(0), upper(0), size(0) {}
+    ArrayBounds(int l, int u) : lower(l), upper(u), size(u - l + 1) {}
+};
+
 class GenCodeVisitor : public Visitor {
 private:
   Environment<ImpValue> env;
@@ -19,6 +28,7 @@ private:
 public:
   int current_offset;
   std::unordered_map<std::string, int> stack_offsets;
+  std::unordered_map<std::string, ArrayBounds> array_bounds; // Nuevo: límites de arrays
   int etiquetas=0;
   void generar(Program* program);
   void visit(Program*);
@@ -46,6 +56,10 @@ public:
   void visit(ExitStatement* s);
   void visit(NewStatement* s);
   void visit(DisposeStatement* s);
+  
+  // Nuevos métodos para verificación de límites
+  void generate_bounds_check(const string& arrayName, int label);
+  void generate_bounds_error();
 };
 
 // Mantener la clase original para compatibilidad
@@ -58,6 +72,7 @@ private:
 public:
   int current_offset;
   std::unordered_map<std::string, int> stack_offsets;
+  std::unordered_map<std::string, ArrayBounds> array_bounds; // Nuevo: límites de arrays
   int etiquetas=0;
   void interpret(Program*);
   void visit(Program*);
@@ -85,6 +100,10 @@ public:
   void visit(ExitStatement* s);
   void visit(NewStatement* s);
   void visit(DisposeStatement* s);
+  
+  // Nuevos métodos para verificación de límites
+  void generate_bounds_check(const string& arrayName, int label);
+  void generate_bounds_error();
 };
 
 

@@ -4,10 +4,26 @@
 
 std::string current_function_name;
 
+// Nuevos métodos para verificación de límites
+void ImpCODE::generate_bounds_check(const string& arrayName, int label) {
+    // Verificar límite inferior
+    // Obtener los límites del array
+    if (array_bounds.find(arrayName) == array_bounds.end()) {
+        cerr << "Error: límites no encontrados para array " << arrayName << endl;
+        exit(1);
+    }
+    
+    ArrayBounds bounds = array_bounds[arrayName];
+    
+}
+
+
+
 void ImpCODE::interpret(Program* p) {
     env.clear();
     etiquetas = 0;
     current_offset = 0;
+    array_bounds.clear(); // Limpiar límites de arrays
 
     cout << ".data" << endl;
     cout << "print_fmt: .string \"%ld\\n\"" << endl;
@@ -74,9 +90,9 @@ void ImpCODE::visit(Body* b) {
         b->vardecs->accept(this);
     }
     
-    // Reservar espacio en la pila para todas las variables locales
+    // Solo reservar espacio si realmente hay variables locales nuevas
     long locals_size = -current_offset;
-    if (locals_size > 0) {
+    if (locals_size > 0 && b->vardecs && !b->vardecs->vardecs.empty()) {
         cout << "  subq $" << locals_size << ", %rsp" << endl;
     }
 
@@ -116,6 +132,9 @@ void ImpCODE::visit(VarDec* vd) {
             v.array_value = std::vector<ImpValue>(size, ImpValue(0));
             current_offset -= size * 8; // Reservar espacio para todo el array
             stack_offsets[var] = current_offset + (size - 1) * 8; // Offset del primer elemento
+            
+            // Almacenar límites del array para verificación
+            array_bounds[var] = ArrayBounds(from, to);
         } else if (!vd->type.empty() && vd->type[0] == '^') {
             // Es un puntero
             v.type = TPOINTER;
@@ -160,6 +179,13 @@ void ImpCODE::visit(AssignStatement* s) {
         cout << "  pushq %rax" << endl;  // Guardar el valor
         arr->index->accept(this);
         cout << "  pushq %rax" << endl;  // Guardar el índice
+        
+        // Verificación de límites
+        int bounds_label = etiquetas++;
+        cout << "  movq %rax, %rcx" << endl;  // Mover índice a %rcx para verificación
+        generate_bounds_check(arr->arrayName, bounds_label);
+        
+        // Continuar con el acceso al array
         cout << "  leaq " << stack_offsets[arr->arrayName] << "(%rbp), %rax" << endl;
         cout << "  popq %rcx" << endl;  // Recuperar el índice
         cout << "  subq $1, %rcx" << endl;
@@ -167,6 +193,9 @@ void ImpCODE::visit(AssignStatement* s) {
         cout << "  subq %rcx, %rax" << endl;  // Restar el offset
         cout << "  popq %rcx" << endl;  // Recuperar el valor
         cout << "  movq %rcx, (%rax)" << endl;  // Asignar el valor
+        
+        // Etiqueta para continuar después de la verificación
+
         // NO agregar subq $X, %rsp aquí
     }
     else if (PointerDerefExp* ptr = dynamic_cast<PointerDerefExp*>(s->lhs)) {
@@ -238,11 +267,18 @@ void ImpCODE::visit(ForStatement* s) {
     
     cout << "for_" << lbl_cond << ":" << endl;
     
-    // Comparar con el valor final
-    cout << "  movq " << stack_offsets[s->var] << "(%rbp), %rax" << endl;
-    s->end->accept(this);
-    cout << "  cmpq %rax, " << stack_offsets[s->var] << "(%rbp)" << endl;
-    cout << "  jg endfor_" << lbl_end - 1<< endl;
+    // Evaluar condición: i <= end
+    cout << "  movq " << stack_offsets[s->var] << "(%rbp), %rax" << endl;  // %rax ← i
+    cout << "  pushq %rax" << endl;  // guardar i
+    s->end->accept(this);  // cargar valor final
+    cout << "  movq %rax, %rcx" << endl;  // %rcx ← valor final
+    cout << "  popq %rax" << endl;  // recuperar i en %rax
+    cout << "  cmpq %rcx, %rax" << endl;  // compara i con valor final → i - valor_final
+    cout << "  movl $0, %eax" << endl;  // limpiar %eax (parte baja de %rax)
+    cout << "  setle %al" << endl;  // %al = 1 si i <= valor_final, si no 0
+    cout << "  movzbq %al, %rax" << endl;  // extiende %al a 64 bits → %rax = 0 o 1
+    cout << "  cmpq $0, %rax" << endl;  // ¿la condición es falsa?
+    cout << "  je endfor_" << lbl_end - 1 << endl;  // si i > valor_final (falsa), salta al final del for
     
     // Ejecutar el cuerpo del bucle
     s->body->accept(this);
@@ -251,7 +287,7 @@ void ImpCODE::visit(ForStatement* s) {
     cout << "  incq " << stack_offsets[s->var] << "(%rbp)" << endl;
     cout << "  jmp for_" << lbl_cond << endl;
     
-    cout << "endfor_" << lbl_end -1<< ":" << endl;
+    cout << "endfor_" << lbl_end - 1 << ":" << endl;
 }
 
 ImpValue ImpCODE::visit(BinaryExp* e) {
@@ -415,6 +451,12 @@ ImpValue ImpCODE::visit(ArrayAccessExp* e) {
     // Generar código para acceso a array unidimensional
     e->index->accept(this);
     cout << "  pushq %rax" << endl;  // Guardar el índice
+    
+    // Verificación de límites
+    int bounds_label = etiquetas++;
+    cout << "  movq %rax, %rcx" << endl;  // Mover índice a %rcx para verificación
+    generate_bounds_check(e->arrayName, bounds_label);
+    
     // Obtener la dirección base del array (primer elemento)
     cout << "  leaq " << stack_offsets[e->arrayName] << "(%rbp), %rax" << endl;
     cout << "  popq %rcx" << endl;  // Recuperar el índice
@@ -423,6 +465,10 @@ ImpValue ImpCODE::visit(ArrayAccessExp* e) {
     cout << "  imulq $8, %rcx" << endl;
     cout << "  subq %rcx, %rax" << endl;  // Restar el offset para crecer hacia abajo
     cout << "  movq (%rax), %rax" << endl;  // Cargar el valor
+    
+
+    
+    
     // NO sobrescribir %rax después de cargar el valor
     return ImpValue(0); // Retornar valor dummy, el valor real está en %rax
 }
@@ -458,11 +504,8 @@ ImpValue ImpCODE::visit(AddressOfExp* e) {
 }
 
 void ImpCODE::visit(BreakStatement* s) {
-    // En una implementación completa, esto debería generar un salto al final del bucle más interno
-    // Por ahora, simplemente generamos un comentario
     cout << "  # break statement - salto al final del bucle más interno" << endl;
-    // Nota: Para una implementación completa, necesitarías manejar las etiquetas de los bucles
-    // y generar el salto apropiado
+
 }
 
 ImpValue ImpCODE::visit(FunctionCallExp* e) {

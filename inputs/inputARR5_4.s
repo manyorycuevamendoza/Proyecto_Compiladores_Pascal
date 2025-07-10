@@ -10,6 +10,7 @@ main:
   pushq %rax
   movq $1, %rax
   pushq %rax
+  movq %rax, %rcx
   leaq -8(%rbp), %rax
   popq %rcx
   subq $1, %rcx
@@ -21,6 +22,7 @@ main:
   pushq %rax
   movq $2, %rax
   pushq %rax
+  movq %rax, %rcx
   leaq -8(%rbp), %rax
   popq %rcx
   subq $1, %rcx
@@ -30,14 +32,21 @@ main:
   movq %rcx, (%rax)
   movq $1, %rax
   movq %rax, -24(%rbp)
-for_0:
-  movq -24(%rbp), %rax
-  movq $2, %rax
-  cmpq %rax, -24(%rbp)
-  jg endfor_0
-  subq $24, %rsp
+for_2:
   movq -24(%rbp), %rax
   pushq %rax
+  movq $2, %rax
+  movq %rax, %rcx
+  popq %rax
+  cmpq %rcx, %rax
+  movl $0, %eax
+  setle %al
+  movzbq %al, %rax
+  cmpq $0, %rax
+  je endfor_2
+  movq -24(%rbp), %rax
+  pushq %rax
+  movq %rax, %rcx
   leaq -8(%rbp), %rax
   popq %rcx
   subq $1, %rcx
@@ -49,8 +58,8 @@ for_0:
   movl $0, %eax
   call printf@PLT
   incq -24(%rbp)
-  jmp for_0
-endfor_0:
+  jmp for_2
+endfor_2:
   movl $0, %eax
   jmp .end_main
 .end_main:
